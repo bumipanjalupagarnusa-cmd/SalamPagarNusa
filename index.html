@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Status Keanggotaan Pagar Nusa</title>
+
+    <style>
+      body {
+        font-family: "Calibri", sans-serif;
+        background-color: #f5f5f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .status-card {
+        background-color: #fff;
+        width: 400px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .header img {
+        width: 60px;
+        height: 60px;
+      }
+
+      /* Tambahkan ini untuk memperbesar font judul */
+      .header h2 {
+        font-size: 32px; /* Bisa diubah sesuai keinginan */
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .info {
+        border-top: 1px solid #ddd;
+        margin-top: 10px;
+        padding-top: 10px;
+      }
+
+      .info p {
+        font-size: 18px;
+        margin: 8px 0;
+      }
+
+      .status {
+        font-weight: bold;
+      }
+
+      
+    </style>
+  </head>
+
+  <body>
+    <div class="status-card">
+      <div class="header">
+        <img src="logo1.png" />
+        <h2>Status Keanggotaan Pagar Nusa</h2>
+      </div>
+
+      <div class="info" id="info-box">
+        <p><b>Status:</b> <span id="status">...</span></p>
+        <p><b>Nama:</b> <span id="nama">...</span></p>
+        <p><b>NIA:</b> <span id="nia">...</span></p>
+        <p>
+          <b>Jabatan:</b>
+          <span id="jabatan"
+            >Anggota - pimpinan cabang kabupaten kediri</span
+          >
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id") || "101"; // default jika tidak ada ID
+
+      if (!id) {
+        document.getElementById("info-box").innerHTML =
+          "<p>ID tidak ditemukan di URL</p>";
+      }
+
+      // GANTI INI:
+      const webAppUrl =
+        "https://script.google.com/macros/s/AKfycbx15LzQKGid6_FoyO-Eu00Yk8-GGJCBSmuord9p7tocpDE4JsSEXO6VVfUCJHESlUdb6g/exec";
+
+      fetch(webAppUrl + "?id=" + id)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            document.getElementById("info-box").innerHTML =
+              "<p>" + data.error + "</p>";
+            return;
+          }
+
+          document.getElementById("status").textContent = data.status;
+          document.getElementById("nama").textContent = data.nama;
+          document.getElementById("nia").textContent = data.nia;
+
+          if (
+            String(data.status).toLowerCase() === "aktif" ||
+            String(data.status).toLowerCase() === "terverifikasi"
+          ) {
+            document.getElementById("status").style.color = "green";
+          } else {
+            document.getElementById("status").style.color = "red";
+          }
+        })
+        .catch(() => {
+          document.getElementById("info-box").innerHTML =
+            "<p>Gagal memuat data</p>";
+        });
+    </script>
+  </body>
+</html>
