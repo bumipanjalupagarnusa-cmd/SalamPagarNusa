@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -23,17 +23,19 @@
         border-radius: 12px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         padding: 20px;
+        position: relative;
       }
 
       .header {
         display: flex;
         align-items: center;
         gap: 15px;
+        margin-bottom: 20px;
       }
 
       .header img {
-        width: 60px;
-        height: 60px;
+        width: 120px;
+        height: 120px;
       }
 
       /* Tambahkan ini untuk memperbesar font judul */
@@ -45,39 +47,102 @@
 
       .info {
         border-top: 1px solid #ddd;
-        margin-top: 10px;
-        padding-top: 10px;
+        padding-top: 20px;
       }
 
       .info p {
         font-size: 18px;
-        margin: 8px 0;
+        margin: 12px 0;
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .info p b {
+        width: 100px;
+        flex-shrink: 0;
       }
 
       .status {
         font-weight: bold;
       }
 
-      
+      /* Loading Container */
+      .loading-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.9);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 12px;
+        z-index: 10;
+      }
+
+      /* Loading Spinner */
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 15px;
+      }
+
+      /* Loading Text */
+      .loading-text {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      /* Spinner Animation */
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Hidden class */
+      .hidden {
+        display: none !important;
+      }
     </style>
   </head>
 
   <body>
     <div class="status-card">
+      <!-- Loading Container -->
+      <div class="loading-container" id="loading-container">
+        <div class="spinner"></div>
+        <div class="loading-text">Memuat data...</div>
+      </div>
+
       <div class="header">
-        <img src="logo1.png" />
+        <img src="logo1.png" alt="Logo Pagar Nusa" />
         <h2>Status Keanggotaan Pagar Nusa</h2>
       </div>
 
       <div class="info" id="info-box">
-        <p><b>Status:</b> <span id="status">...</span></p>
-        <p><b>Nama:</b> <span id="nama">...</span></p>
-        <p><b>NIA:</b> <span id="nia">...</span></p>
         <p>
-          <b>Jabatan:</b>
-          <span id="jabatan"
-            >Anggota - pimpinan cabang kabupaten kediri</span
-          >
+          <b>Status</b>
+          <span id="status" style="font-weight: bold">...</span>
+        </p>
+
+        <p><b>Nama</b> <span id="nama">...</span></p>
+        <p><b>NIA</b> <span id="nia">...</span></p>
+        <p>
+          <b>Jabatan</b>
+          <span id="jabatan" style="font-weight: bold">
+            Anggota - pimpinan cabang kabupaten kediri
+          </span>
         </p>
       </div>
     </div>
@@ -85,10 +150,12 @@
     <script>
       const params = new URLSearchParams(window.location.search);
       const id = params.get("id") || "101"; // default jika tidak ada ID
+      const loadingContainer = document.getElementById("loading-container");
+      const infoBox = document.getElementById("info-box");
 
       if (!id) {
-        document.getElementById("info-box").innerHTML =
-          "<p>ID tidak ditemukan di URL</p>";
+        loadingContainer.classList.add("hidden");
+        infoBox.innerHTML = "<p>ID tidak ditemukan di URL</p>";
       }
 
       // GANTI INI:
@@ -98,9 +165,11 @@
       fetch(webAppUrl + "?id=" + id)
         .then((res) => res.json())
         .then((data) => {
+          // Sembunyikan loading setelah data dimuat
+          loadingContainer.classList.add("hidden");
+
           if (data.error) {
-            document.getElementById("info-box").innerHTML =
-              "<p>" + data.error + "</p>";
+            infoBox.innerHTML = "<p>" + data.error + "</p>";
             return;
           }
 
@@ -118,8 +187,9 @@
           }
         })
         .catch(() => {
-          document.getElementById("info-box").innerHTML =
-            "<p>Gagal memuat data</p>";
+          // Sembunyikan loading jika terjadi error
+          loadingContainer.classList.add("hidden");
+          infoBox.innerHTML = "<p>Gagal memuat data</p>";
         });
     </script>
   </body>
